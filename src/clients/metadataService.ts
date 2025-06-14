@@ -20,6 +20,10 @@ export class MetadataServiceClient {
   }
 
   _post(endpoint: string, params: {} = {}) {
+    if (endpoint.includes('metadata')) {
+      console.log(endpoint);
+    }
+
     return fetch(`${this.host}/${endpoint}`, {
       method: 'POST',
       headers: {
