@@ -40,7 +40,7 @@ const AssetPage = () => {
 
   const pageContent = isViewingUnlaunchedMarket ? (
     <>
-      <div tw="row mx-1.25 justify-center gap-0.5 rounded-0.5 border border-solid border-color-border py-0.5 text-color-text-0">
+      <div tw="row mx-1.25 justify-center gap-0.5 rounded-0.5 border border-solid border-color-border py-0.5 text-black text-color-text-0">
         <Icon iconName={IconName.Info} />
         {stringGetter({ key: STRING_KEYS.LAUNCHABLE_DETAILS })}
       </div>
