@@ -152,7 +152,11 @@ export const useMarketsData = ({
   ]);
 
   const filteredMarkets = useMemo(() => {
-    const filtered = markets.filter(filterFunctions[filter]);
+    const ALLOWED_SYMBOLS = ['BTC', 'ETH', 'POL', 'USDC', 'USDT', 'wBTC', 'wETH'];
+
+    const filtered = markets
+      .filter((m) => ALLOWED_SYMBOLS.includes(m.assetId)) // restrict to BTC and ETH
+      .filter(filterFunctions[filter]);
 
     if (searchFilter) {
       return filtered.filter(
