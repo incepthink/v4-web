@@ -17,7 +17,6 @@ import { useTokenConfigs } from '@/hooks/useTokenConfigs';
 import { useURLConfigs } from '@/hooks/useURLConfigs';
 
 import { BellStrokeIcon } from '@/icons';
-import { LogoShortIcon } from '@/icons/logo-short';
 import breakpoints from '@/styles/breakpoints';
 import { headerMixins } from '@/styles/headerMixins';
 import { layoutMixins } from '@/styles/layoutMixins';
@@ -74,82 +73,82 @@ export const HeaderDesktop = () => {
           label: stringGetter({ key: STRING_KEYS.PORTFOLIO }),
           href: AppRoute.Portfolio,
         },
-        {
-          value: 'VAULT',
-          label: stringGetter({ key: STRING_KEYS.MEGAVAULT }),
-          href: AppRoute.Vault,
-        },
-        affiliatesEnabled && {
-          value: 'REFERRALS',
-          label: stringGetter({ key: STRING_KEYS.REFERRALS }),
-          href: AppRoute.Referrals,
-        },
-        {
-          value: chainTokenLabel,
-          label: chainTokenLabel,
-          href: `/${chainTokenLabel}`,
-          slotAfter: !hasSeenLaunchIncentives && (
-            <div tw="h-[0.4375rem] w-[0.4375rem] rounded-[50%] bg-color-accent" />
-          ),
-        },
-        {
-          value: 'MORE',
-          label: stringGetter({ key: STRING_KEYS.MORE }),
-          subitems: [
-            {
-              value: 'DOCUMENTATION',
-              slotBefore: <Icon iconName={IconName.Terminal} />,
-              label: stringGetter({ key: STRING_KEYS.API_DOCUMENTATION }),
-              onClick: () => {
-                dispatch(
-                  openDialog(
-                    DialogTypes.ExternalLink({
-                      link: documentation,
-                    })
-                  )
-                );
-              },
-            },
-            {
-              value: 'MINTSCAN',
-              slotBefore: <Icon iconName={IconName.Mintscan} />,
-              label: stringGetter({ key: STRING_KEYS.MINTSCAN }),
-              href: mintscanBase,
-            },
-            {
-              value: 'COMMUNITY',
-              slotBefore: <Icon iconName={IconName.Discord} />,
-              label: stringGetter({ key: STRING_KEYS.COMMUNITY }),
-              href: community,
-            },
-            {
-              value: 'TERMS_OF_USE',
-              slotBefore: <Icon iconName={IconName.File} />,
-              label: stringGetter({ key: STRING_KEYS.TERMS_OF_USE }),
-              href: AppRoute.Terms,
-            },
-            {
-              value: 'PRIVACY_POLICY',
-              slotBefore: <Icon iconName={IconName.Privacy} />,
-              label: stringGetter({ key: STRING_KEYS.PRIVACY_POLICY }),
-              href: AppRoute.Privacy,
-            },
-            {
-              value: 'HELP',
-              slotBefore: <Icon iconName={IconName.HelpCircle} />,
-              label: stringGetter({ key: STRING_KEYS.HELP }),
-              onClick: () => {
-                dispatch(openDialog(DialogTypes.Help()));
-              },
-            },
-            {
-              value: 'STATS',
-              slotBefore: <Icon iconName={IconName.FundingChart} />,
-              label: stringGetter({ key: STRING_KEYS.STATISTICS }),
-              href: exchangeStats,
-            },
-          ],
-        },
+        // { // removed Vault
+        //   value: 'VAULT',
+        //   label: stringGetter({ key: STRING_KEYS.MEGAVAULT }),
+        //   href: AppRoute.Vault,
+        // },
+        // affiliatesEnabled && { // removed referrals
+        //   value: 'REFERRALS',
+        //   label: stringGetter({ key: STRING_KEYS.REFERRALS }),
+        //   href: AppRoute.Referrals,
+        // },
+        // { // removed Dv4TNT
+        //   value: chainTokenLabel,
+        //   label: chainTokenLabel,
+        //   href: `/${chainTokenLabel}`,
+        //   slotAfter: !hasSeenLaunchIncentives && (
+        //     <div tw="h-[0.4375rem] w-[0.4375rem] rounded-[50%] bg-color-accent" />
+        //   ),
+        // },
+        // { // removed MORE
+        //   value: 'MORE',
+        //   label: stringGetter({ key: STRING_KEYS.MORE }),
+        //   subitems: [
+        //     {
+        //       value: 'DOCUMENTATION',
+        //       slotBefore: <Icon iconName={IconName.Terminal} />,
+        //       label: stringGetter({ key: STRING_KEYS.API_DOCUMENTATION }),
+        //       onClick: () => {
+        //         dispatch(
+        //           openDialog(
+        //             DialogTypes.ExternalLink({
+        //               link: documentation,
+        //             })
+        //           )
+        //         );
+        //       },
+        //     },
+        //     {
+        //       value: 'MINTSCAN',
+        //       slotBefore: <Icon iconName={IconName.Mintscan} />,
+        //       label: stringGetter({ key: STRING_KEYS.MINTSCAN }),
+        //       href: mintscanBase,
+        //     },
+        //     {
+        //       value: 'COMMUNITY',
+        //       slotBefore: <Icon iconName={IconName.Discord} />,
+        //       label: stringGetter({ key: STRING_KEYS.COMMUNITY }),
+        //       href: community,
+        //     },
+        //     {
+        //       value: 'TERMS_OF_USE',
+        //       slotBefore: <Icon iconName={IconName.File} />,
+        //       label: stringGetter({ key: STRING_KEYS.TERMS_OF_USE }),
+        //       href: AppRoute.Terms,
+        //     },
+        //     {
+        //       value: 'PRIVACY_POLICY',
+        //       slotBefore: <Icon iconName={IconName.Privacy} />,
+        //       label: stringGetter({ key: STRING_KEYS.PRIVACY_POLICY }),
+        //       href: AppRoute.Privacy,
+        //     },
+        //     {
+        //       value: 'HELP',
+        //       slotBefore: <Icon iconName={IconName.HelpCircle} />,
+        //       label: stringGetter({ key: STRING_KEYS.HELP }),
+        //       onClick: () => {
+        //         dispatch(openDialog(DialogTypes.Help()));
+        //       },
+        //     },
+        //     {
+        //       value: 'STATS',
+        //       slotBefore: <Icon iconName={IconName.FundingChart} />,
+        //       label: stringGetter({ key: STRING_KEYS.STATISTICS }),
+        //       href: exchangeStats,
+        //     },
+        //   ],
+        // },
       ].filter(isTruthy),
     },
   ];
@@ -157,7 +156,8 @@ export const HeaderDesktop = () => {
   return (
     <$Header>
       <$LogoLink to="/">
-        <LogoShortIcon />
+        {/* <LogoShortIcon /> */}
+        <Icon iconName={IconName.AggtradeLogo} size="2em" />
       </$LogoLink>
 
       <VerticalSeparator />

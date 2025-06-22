@@ -18,7 +18,7 @@
   --color-text-2: #FAFAFD; /* ColorToken.LightGray2; */
   --color-text-button: #FAFAFA; /* ColorToken.LightGray0; */
 
-  --color-accent: #6966FF; /* ColorToken.Purple1; */
+  --color-accent: #00FFE9; /* ColorToken.Purple1; */
 }
   
   /* Theme: Light */
@@ -39,7 +39,7 @@
   --color-text-2: #181818; /* ColorToken.DarkGray13; */
   --color-text-button: #FFFFFF; /* ColorToken.White; */
 
-  --color-accent: #7774FF; /* ColorToken.Purple0; */
+  --color-accent: #00FFE9; /* ColorToken.Purple0; */
 }
   
   /* Theme: Dark */
@@ -60,6 +60,6 @@
   --color-text-2: #FAFAFA; /* ColorToken.LightGray0; */
   --color-text-button: #FAFAFA; /* ColorToken.LightGray0; */
 
-  --color-accent: #7774FF; /* ColorToken.Purple0; */
+  --color-accent: #00FFE9; /* ColorToken.Purple0; */
 }
   

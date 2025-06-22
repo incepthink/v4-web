@@ -158,3 +158,5 @@ export { default as OrderPendingIcon } from './trade/order-pending.svg';
 export { default as OrderUntriggeredIcon } from './trade/order-untriggered.svg';
 
 export { default as PositionPartialIcon } from './trade/position-partial.svg';
+
+export { default as AggtradeLogo } from './aggtrade-logo.svg';

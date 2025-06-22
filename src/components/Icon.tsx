@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 import {
   AddressConnectorIcon,
+  AggtradeLogo,
   AppleIcon,
   ArrowIcon,
   Bar3Icon,
@@ -254,6 +255,7 @@ export enum IconName {
   Withdraw = 'Withdraw',
   XCircle = 'XCircle',
   SocialX = 'SocialX',
+  AggtradeLogo = 'AggtradeLogo',
 }
 
 const icons = {
@@ -379,6 +381,7 @@ const icons = {
   [IconName.Withdraw]: WithdrawIcon,
   [IconName.XCircle]: XCircleIcon,
   [IconName.SocialX]: SocialXIcon,
+  [IconName.AggtradeLogo]: AggtradeLogo,
 } as Record<IconName, ElementType | undefined>;
 
 // we load reward-start async because it's gigantic for some reason

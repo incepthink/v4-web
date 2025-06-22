@@ -48,7 +48,7 @@ export enum ColorToken {
   GrayPurple1 = '#C8C7D8',
   GrayPurple2 = '#807E98',
 
-  Purple0 = '#7774FF',
+  Purple0 = '#00FFE9',
   Purple1 = '#6966FF',
 
   Green0 = '#CEEDE3',
