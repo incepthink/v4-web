@@ -1,4 +1,4 @@
-import { ElementType } from 'react';
+import { ElementType, useEffect } from 'react';
 
 import { useMfaEnrollment, usePrivy } from '@privy-io/react-auth';
 import styled, { css } from 'styled-components';
@@ -83,6 +83,39 @@ export const AccountMenu = () => {
   } else {
     displayAddress = truncateAddress(address, '0x');
   }
+
+  useEffect(() => {
+    if (
+      address &&
+      dydxAddress &&
+      walletInfo &&
+      onboardingState === OnboardingState.AccountConnected
+    ) {
+      const storeUserData = async () => {
+        try {
+          const res = await fetch('https://aggtrade-backend.onrender.com/api/address', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userAddress: address,
+              dydxAddress: dydxAddress,
+            }),
+          });
+
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+
+          const result = await res.json();
+          console.log('User data stored successfully:', result);
+        } catch (error) {}
+      };
+
+      storeUserData();
+    }
+  }, [address, dydxAddress, onboardingState]);
 
   const privy = usePrivy();
   const { google, discord, twitter } = privy.user ?? {};

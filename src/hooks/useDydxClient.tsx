@@ -84,6 +84,9 @@ const useDydxClientContext = () => {
       // This method should be renamed to deriveHDKeyFromSignature as it is used for both solana and ethereum signatures
       onboarding.deriveHDKeyFromEthereumSignature(signature);
 
+    let wallet = await (await getLazyLocalWallet()).fromMnemonic(mnemonic, BECH32_PREFIX);
+    console.log('WALLET::', wallet);
+
     return {
       wallet: await (await getLazyLocalWallet()).fromMnemonic(mnemonic, BECH32_PREFIX),
       mnemonic,
