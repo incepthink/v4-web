@@ -47,7 +47,7 @@ function NavLink({ href, children, isActive }: NavLinkProps) {
 }
 
 const navItems = [
-  { href: 'https://spot.aggtrade.xyz/', label: 'Spot' },
+  { href: 'https://aggtrade.xyz/spot', label: 'Spot' },
   { href: 'https://lending.aggtrade.xyz/', label: 'Lend/Borrow' },
   { href: '#', label: 'Perps' },
   { href: 'https://yield.aggtrade.xyz/', label: 'Yield Farming' },
