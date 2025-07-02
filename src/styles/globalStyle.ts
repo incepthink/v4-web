@@ -11,7 +11,7 @@ export const GlobalStyle = createGlobalStyle`
 
     --color-layer-0: ${({ theme }) => theme.layer0};
     --color-layer-1: ${({ theme }) => theme.layer1};
-    --color-layer-2: ${({ theme }) => theme.layer2};
+    --color-layer-2: ${({ theme }) => '#050512CC'};
     --color-layer-3: ${({ theme }) => theme.layer3};
     --color-layer-4: ${({ theme }) => theme.layer4};
     --color-layer-5: ${({ theme }) => theme.layer5};
@@ -26,7 +26,7 @@ export const GlobalStyle = createGlobalStyle`
     --color-text-0: ${({ theme }) => theme.textTertiary};
     --color-text-1: ${({ theme }) => theme.textSecondary};
     --color-text-2: ${({ theme }) => theme.textPrimary};
-    --color-text-button: ${({ theme }) => theme.textButton};
+    --color-text-button: ${({ theme }) => '#000'};
 
     --color-gradient-base-0: ${({ theme }) => theme.gradientBase0};
     --color-gradient-base-1: ${({ theme }) => theme.gradientBase1};

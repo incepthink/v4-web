@@ -355,7 +355,6 @@ const $SimpleUiGrid = styled.div`
   display: grid;
   grid-template-areas: 'Main';
   grid-template-columns: 100vw;
-  grid-template-rows: 100vh;
 `;
 
 const $SimpleUiMain = styled.main`

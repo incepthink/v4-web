@@ -65,7 +65,7 @@ export default function AggtraderNavbar() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '16px 40px',
+        padding: '8px 10px',
         backgroundColor: 'rgb(5, 14, 25)',
         boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
         zIndex: 1000,

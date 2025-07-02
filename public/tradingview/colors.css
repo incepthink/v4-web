@@ -16,7 +16,7 @@
   --color-text-0: #807E98; /* ColorToken.GrayPurple2; */
   --color-text-1: #C8C7D8; /* ColorToken.GrayPurple1; */
   --color-text-2: #FAFAFD; /* ColorToken.LightGray2; */
-  --color-text-button: #FAFAFA; /* ColorToken.LightGray0; */
+  --color-text-button: #000; /* ColorToken.LightGray0; */
 
   --color-accent: #00FFE9; /* ColorToken.Purple1; */
 }
@@ -37,7 +37,7 @@
   --color-text-0: #737373; /* ColorToken.DarkGray1; */
   --color-text-1: #4B4B4B; /* ColorToken.DarkGray3; */
   --color-text-2: #181818; /* ColorToken.DarkGray13; */
-  --color-text-button: #FFFFFF; /* ColorToken.White; */
+  --color-text-button: #000; /* ColorToken.White; */
 
   --color-accent: #00FFE9; /* ColorToken.Purple0; */
 }
@@ -58,7 +58,7 @@
   --color-text-0: #888891; /* ColorToken.DarkGray0; */
   --color-text-1: #CACACE; /* ColorToken.MediumGray0; */
   --color-text-2: #FAFAFA; /* ColorToken.LightGray0; */
-  --color-text-button: #FAFAFA; /* ColorToken.LightGray0; */
+  --color-text-button: #000; /* ColorToken.LightGray0; */
 
   --color-accent: #00FFE9; /* ColorToken.Purple0; */
 }

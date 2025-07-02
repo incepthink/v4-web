@@ -550,6 +550,7 @@ export const PositionsTable = forwardRef(
 
 const $Table = styled(Table)`
   ${tradeViewMixins.horizontalTable}
+  box-shadow: inset 0px 1px 20px rgba(0, 255, 233, 0.4);
 
   tr {
     &:after {
