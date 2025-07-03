@@ -9,8 +9,8 @@ const entryPointsDir = path.resolve(projectRoot, '../entry-points');
 
 const ENTRY_POINTS = [
   {
-    title: 'dYdX',
-    description: 'dYdX',
+    title: 'AggTrade - Perp',
+    description: 'AggTrade - Perp',
     fileName: 'index.html',
   },
 ];

@@ -63,11 +63,11 @@ export const HeaderDesktop = () => {
           label: stringGetter({ key: STRING_KEYS.TRADE }),
           href: AppRoute.Trade,
         },
-        {
-          value: 'MARKETS',
-          label: stringGetter({ key: STRING_KEYS.MARKETS }),
-          href: AppRoute.Markets,
-        },
+        // {
+        //   value: 'MARKETS',
+        //   label: stringGetter({ key: STRING_KEYS.MARKETS }),
+        //   href: AppRoute.Markets,
+        // },
         {
           value: 'PORTFOLIO',
           label: stringGetter({ key: STRING_KEYS.PORTFOLIO }),
