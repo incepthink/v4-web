@@ -39,6 +39,7 @@ import { NotificationsToastArea } from '@/layout/NotificationsToastArea';
 import { parseLocationHash } from '@/lib/urlUtils';
 import { config, privyConfig } from '@/lib/wagmi';
 
+import AggtraderNavbar from './components/AggtraderNavbar';
 import { RestrictionWarning } from './components/RestrictionWarning';
 import { LocalStorageKey } from './constants/localStorage';
 import { SkipProvider } from './hooks/transfers/skipClient';
@@ -136,6 +137,7 @@ const Content = () => {
   return (
     <>
       <GlobalStyle />
+      <AggtraderNavbar />
       <$Content
         isShowingHeader={isShowingHeader}
         isShowingFooter={isShowingFooter}

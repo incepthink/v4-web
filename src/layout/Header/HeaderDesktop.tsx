@@ -27,7 +27,6 @@ import { IconButton } from '@/components/IconButton';
 import { NavigationMenu } from '@/components/NavigationMenu';
 import { VerticalSeparator } from '@/components/Separator';
 import { MobileDownloadLinks } from '@/views/MobileDownloadLinks';
-import { AccountMenu } from '@/views/menus/AccountMenu/AccountMenu';
 import { LanguageSelector } from '@/views/menus/LanguageSelector';
 import { NetworkSelectMenu } from '@/views/menus/NetworkSelectMenu';
 import { NotificationsMenu } from '@/views/menus/NotificationsMenu';
@@ -154,78 +153,78 @@ export const HeaderDesktop = () => {
   ];
 
   return (
-    <$Header>
-      <$LogoLink to="/">
-        {/* <LogoShortIcon /> */}
-        <Icon iconName={IconName.AggtradeLogo} size="2em" />
-      </$LogoLink>
-
-      <VerticalSeparator />
-
-      <$NavBefore>
-        <$LanguageSelector sideOffset={16}>
-          <Icon iconName={IconName.Translate} size="1.25em" />
-        </$LanguageSelector>
-        <VerticalSeparator />
-        <NetworkSelectMenu sideOffset={16} />
-      </$NavBefore>
-
-      <VerticalSeparator />
-
-      <$NavigationScrollBar>
-        <$NavigationMenu items={navItems} orientation="horizontal" dividerStyle="underline" />
-      </$NavigationScrollBar>
-
-      <div role="separator" />
-
-      <$NavAfter>
-        {onboardingState === OnboardingState.AccountConnected &&
-          complianceState === ComplianceStates.FULL_ACCESS && (
-            <>
-              <Button
-                tw="mr-[0.5em]"
-                shape={ButtonShape.Pill}
-                size={ButtonSize.XSmall}
-                action={
-                  !availableBalance || availableBalance > 0
-                    ? ButtonAction.Secondary
-                    : ButtonAction.Primary
-                }
-                onClick={() => {
-                  dispatch(openDialog(DialogTypes.Deposit2({})));
-                }}
-                state={{ isDisabled: !dydxAccounts }}
-              >
-                {stringGetter({ key: STRING_KEYS.DEPOSIT })}
-              </Button>
-              <VerticalSeparator />
-            </>
-          )}
-
-        <MobileDownloadLinks />
-
-        <$IconButton
-          shape={ButtonShape.Rectangle}
-          iconName={IconName.HelpCircle}
-          onClick={() => dispatch(openDialog(DialogTypes.Help()))}
-        />
+    <div>
+      <$Header>
+        <$LogoLink to="/">
+          {/* <LogoShortIcon /> */}
+          <Icon iconName={IconName.AggtradeLogo} size="2em" />
+        </$LogoLink>
 
         <VerticalSeparator />
 
-        <NotificationsMenu
-          slotTrigger={
-            <$IconButton
-              shape={ButtonShape.Rectangle}
-              iconComponent={BellStrokeIcon as React.ElementType}
-            />
-          }
-        />
+        <$NavBefore>
+          <$LanguageSelector sideOffset={16}>
+            <Icon iconName={IconName.Translate} size="1.25em" />
+          </$LanguageSelector>
+          <VerticalSeparator />
+          <NetworkSelectMenu sideOffset={16} />
+        </$NavBefore>
 
         <VerticalSeparator />
 
-        <AccountMenu />
-      </$NavAfter>
-    </$Header>
+        <$NavigationScrollBar>
+          <$NavigationMenu items={navItems} orientation="horizontal" dividerStyle="underline" />
+        </$NavigationScrollBar>
+
+        <div role="separator" />
+
+        <$NavAfter>
+          {onboardingState === OnboardingState.AccountConnected &&
+            complianceState === ComplianceStates.FULL_ACCESS && (
+              <>
+                <Button
+                  tw="mr-[0.5em]"
+                  shape={ButtonShape.Pill}
+                  size={ButtonSize.XSmall}
+                  action={
+                    !availableBalance || availableBalance > 0
+                      ? ButtonAction.Secondary
+                      : ButtonAction.Primary
+                  }
+                  onClick={() => {
+                    dispatch(openDialog(DialogTypes.Deposit2({})));
+                  }}
+                  state={{ isDisabled: !dydxAccounts }}
+                >
+                  {stringGetter({ key: STRING_KEYS.DEPOSIT })}
+                </Button>
+                <VerticalSeparator />
+              </>
+            )}
+
+          <MobileDownloadLinks />
+
+          <$IconButton
+            shape={ButtonShape.Rectangle}
+            iconName={IconName.HelpCircle}
+            onClick={() => dispatch(openDialog(DialogTypes.Help()))}
+          />
+
+          <VerticalSeparator />
+
+          <NotificationsMenu
+            slotTrigger={
+              <$IconButton
+                shape={ButtonShape.Rectangle}
+                iconComponent={BellStrokeIcon as React.ElementType}
+              />
+            }
+          />
+
+          <VerticalSeparator />
+        </$NavAfter>
+      </$Header>
+    </div>
   );
 };
 const $Header = styled.header`

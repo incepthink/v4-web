@@ -2,6 +2,8 @@
 
 import React from 'react';
 
+import { AccountMenu } from '@/views/menus/AccountMenu/AccountMenu';
+
 interface NavLinkProps {
   href: string;
   children: React.ReactNode;
@@ -48,8 +50,8 @@ function NavLink({ href, children, isActive }: NavLinkProps) {
 
 const navItems = [
   { href: 'https://aggtrade.xyz/spot', label: 'Spot' },
-  { href: 'https://lending.aggtrade.xyz/', label: 'Lend/Borrow' },
   { href: '#', label: 'Perps' },
+  { href: 'https://lending.aggtrade.xyz/', label: 'Lend/Borrow' },
   { href: 'https://yield.aggtrade.xyz/', label: 'Yield Farming' },
   { href: 'https://aggtrade.xyz/profile', label: 'Account' },
 ];
@@ -71,7 +73,10 @@ export default function AggtraderNavbar() {
         zIndex: 1000,
       }}
     >
-      <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+      <a
+        href="https://aggtrade.xyz/"
+        style={{ display: 'flex', gap: '10px', alignItems: 'center' }}
+      >
         <div style={{ width: '40px' }}>
           <img src="/aggtrade.png" alt="" style={{ width: '100%', objectFit: 'cover' }} />
         </div>
@@ -86,7 +91,7 @@ export default function AggtraderNavbar() {
         >
           AggTrade
         </h2>
-      </div>
+      </a>
       <ul
         style={{
           listStyle: 'none',
@@ -109,6 +114,8 @@ export default function AggtraderNavbar() {
           );
         })}
       </ul>
+
+      <AccountMenu />
     </nav>
   );
 }
