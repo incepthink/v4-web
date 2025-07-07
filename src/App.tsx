@@ -111,6 +111,7 @@ const Content = () => {
         <GlobalStyle />
         <$SimpleUiGrid>
           <$SimpleUiMain>
+            <AggtraderNavbar />
             <Suspense fallback={<LoadingSpace id="main" tw="h-full w-full" />}>
               <Routes>
                 <Route path={AppRoute.Markets} element={<SimpleMarketsPage />} />
