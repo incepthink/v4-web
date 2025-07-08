@@ -171,6 +171,7 @@ const $Dialog = styled(Dialog)<{ width?: string }>`
 
   --dialog-icon-size: 1.25rem;
   --dialog-content-paddingBottom: 1rem;
+  padding-top: 50px;
 `;
 
 const $Ring = tw(Ring)`w-1.25 h-1.25 [--ring-color:--color-accent]`;
