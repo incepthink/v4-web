@@ -110,6 +110,7 @@ const $MobileNav = styled.footer`
   background-color: var(--color-layer-2);
 
   ${layoutMixins.stickyFooter}
+  transform: translateY(-65px);
 `;
 
 const $NavigationMenu = styled(NavigationMenu)`

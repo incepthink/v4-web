@@ -91,7 +91,7 @@ const Content = () => {
   const location = useLocation();
   const isShowingHeader = isNotTablet;
   const isShowingFooter = useShouldShowFooter();
-  const isSimpleUi = false;
+  const isSimpleUi = isTablet;
 
   const { showRestrictionWarning } = useComplianceState();
 
