@@ -54,7 +54,6 @@ import { useShouldShowFooter } from './hooks/useShouldShowFooter';
 import { useTokenConfigs } from './hooks/useTokenConfigs';
 import { useUpdateTransfers } from './hooks/useUpdateTransfers';
 import { isTruthy } from './lib/isTruthy';
-import { testFlags } from './lib/testFlags';
 import { AffiliatesPage } from './pages/affiliates/AffiliatesPage';
 import { persistor } from './state/_store';
 import { appQueryClient } from './state/appQueryClient';
@@ -92,7 +91,7 @@ const Content = () => {
   const location = useLocation();
   const isShowingHeader = isNotTablet;
   const isShowingFooter = useShouldShowFooter();
-  const isSimpleUi = testFlags.simpleUi && isTablet;
+  const isSimpleUi = isTablet;
 
   const { showRestrictionWarning } = useComplianceState();
 
