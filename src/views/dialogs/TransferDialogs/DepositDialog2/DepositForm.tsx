@@ -1,17 +1,21 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from 'react';
 
 import { BonsaiCore } from '@/bonsai/ontology';
-import { formatUnits, parseUnits } from 'viem';
+import { sumBy } from 'lodash';
+import { DateTime } from 'luxon';
 import { useWalletClient } from 'wagmi';
 
+import { AlertType } from '@/constants/alerts';
 import { AnalyticsEvents } from '@/constants/analytics';
 import { ButtonAction, ButtonType } from '@/constants/buttons';
 import { STRING_KEYS } from '@/constants/localization';
 import { MIN_DEPOSIT_AMOUNT, NumberSign } from '@/constants/numbers';
-import { TokenForTransfer, USDC_DECIMALS } from '@/constants/tokens';
+import { SKIP_GO_FAST_TRANSFER_LIMIT, SKIP_GO_FAST_TRANSFER_MIN } from '@/constants/skip';
+import { ColorToken } from '@/constants/styles/base';
+import { TokenForTransfer } from '@/constants/tokens';
 import { WalletNetworkType } from '@/constants/wallets';
 
-import { SkipRouteSpeed, useSkipClient } from '@/hooks/transfers/skipClient';
+import { useSkipClient } from '@/hooks/transfers/skipClient';
 import { useAccounts } from '@/hooks/useAccounts';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useStringGetter } from '@/hooks/useStringGetter';
@@ -19,10 +23,14 @@ import { useWalletConnection } from '@/hooks/useWalletConnection';
 
 import { WarningIcon } from '@/icons';
 
+import { AlertMessage } from '@/components/AlertMessage';
+import { AssetIcon } from '@/components/AssetIcon';
 import { Button } from '@/components/Button';
 import { Details } from '@/components/Details';
 import { DiffOutput } from '@/components/DiffOutput';
+import { Icon, IconName } from '@/components/Icon';
 import { Output, OutputType } from '@/components/Output';
+import { AccentTag } from '@/components/Tag';
 import { WithTooltip } from '@/components/WithTooltip';
 
 import { calculateIsAccountViewOnly } from '@/state/accountCalculators';
@@ -30,14 +38,14 @@ import { useAppSelector } from '@/state/appTypes';
 import { Deposit } from '@/state/transfers';
 
 import { track } from '@/lib/analytics/analytics';
+import { calc } from '@/lib/do';
 import { MustBigNumber, MustNumber } from '@/lib/numbers';
+import { getStringsForDateTimeDiff } from '@/lib/timeUtils';
 import { orEmptyObj } from '@/lib/typeUtils';
 
-import { TransferRouteOptions } from '../RouteOptions';
 import { getTokenSymbol } from '../utils';
 import { AmountInput } from './AmountInput';
 import { DepositSteps } from './DepositSteps';
-import { OtherDepositOptions } from './OtherDepositOptions';
 import { DepositStep, useDepositSteps } from './depositHooks';
 import { isInstantDeposit, useBalance, useDepositDeltas, useDepositRoutes } from './queries';
 
@@ -46,14 +54,12 @@ export const DepositForm = ({
   amount,
   setAmount,
   token,
-  onClose,
   onDeposit,
 }: {
   onTokenSelect: () => void;
   amount: string;
   setAmount: Dispatch<SetStateAction<string>>;
   token: TokenForTransfer;
-  onClose: () => void;
   onDeposit: (deposit: Deposit) => void;
 }) => {
   const stringGetter = useStringGetter();
@@ -62,7 +68,6 @@ export const DepositForm = ({
   const { data: walletClient } = useWalletClient();
   const isAccountViewOnly = useAppSelector(calculateIsAccountViewOnly);
 
-  const [selectedSpeed, setSelectedSpeed] = useState<SkipRouteSpeed>('fast');
   const debouncedAmount = useDebounce(amount);
   const {
     data: routes,
@@ -71,15 +76,30 @@ export const DepositForm = ({
     error,
   } = useDepositRoutes(token, debouncedAmount);
 
-  useEffect(() => {
-    if (debouncedAmount && !isFetching && routes && !routes.fast) setSelectedSpeed('slow');
-  }, [isFetching, routes, debouncedAmount]);
+  const fastRouteFee =
+    routes?.fast?.estimatedFees &&
+    sumBy(routes.fast.estimatedFees, (fee) => MustNumber(fee.amount));
 
   // Difference between selectedRoute and depositRoute:
   // selectedRoute may be the cached route from the previous query response,
   // whereas depositRoute is undefined while the current route query is still loading
-  const selectedRoute = selectedSpeed === 'fast' ? routes?.fast : routes?.slow;
+  const selectedRoute = calc(() => {
+    if (fastRouteFee != null && fastRouteFee > 0) {
+      return routes?.slow;
+    }
+
+    return routes?.fast ?? routes?.slow;
+  });
+
   const depositRoute = !isPlaceholderData ? selectedRoute : undefined;
+
+  const isBelowInstantDepositMin =
+    depositRoute?.usdAmountIn &&
+    MustBigNumber(depositRoute.usdAmountIn).lt(SKIP_GO_FAST_TRANSFER_MIN);
+
+  const isAboveInstantDepositMax =
+    depositRoute?.usdAmountIn &&
+    MustBigNumber(depositRoute.usdAmountIn).gt(SKIP_GO_FAST_TRANSFER_LIMIT);
 
   const { freeCollateral } = orEmptyObj(
     useAppSelector(BonsaiCore.account.parentSubaccountSummary.data)
@@ -293,21 +313,43 @@ export const DepositForm = ({
     }
   };
 
-  const receipt = selectedRoute && (
+  // @ts-expect-error goFastTransfer not typed on RouteOperation
+  const isGoFastRoute = depositRoute?.operations.find((op) => Boolean(op.goFastTransfer));
+  const routeSpeed = depositRoute?.estimatedRouteDurationSeconds;
+  const routeDuration = Date.now() + (routeSpeed ?? 0) * 1000;
+  const { timeString, unitStringKey } = getStringsForDateTimeDiff(
+    DateTime.fromMillis(routeDuration)
+  );
+  const routeSpeedString = routeSpeed
+    ? `~${timeString}${stringGetter({ key: unitStringKey })}`
+    : undefined;
+
+  const depositMethod = isFetching ? (
+    <Output type={OutputType.Text} isLoading value={null} />
+  ) : depositRoute && debouncedAmount.trim() !== '' ? (
+    isGoFastRoute ? (
+      <span tw="row gap-0.25">
+        <Icon css={{ color: ColorToken.Yellow1 }} iconName={IconName.Lightning} />
+        <span tw="text-color-text-2">{stringGetter({ key: STRING_KEYS.INSTANT })}</span>
+        <AccentTag>{stringGetter({ key: STRING_KEYS.FREE })}</AccentTag>
+      </span>
+    ) : (
+      <span>
+        <span>{routeSpeedString}</span>
+      </span>
+    )
+  ) : (
+    <span tw="text-color-text-0">-</span>
+  );
+
+  const receipt = (
     <Details
       tw="font-small-book"
       items={[
         {
-          key: 'amount',
-          label: stringGetter({ key: STRING_KEYS.ESTIMATED_AMOUNT_RECEIVED }),
-          value: (
-            <Output
-              tw="inline"
-              type={OutputType.Fiat}
-              isLoading={isFetching}
-              value={formatUnits(BigInt(selectedRoute.amountOut), USDC_DECIMALS)}
-            />
-          ),
+          key: 'deposit-method',
+          label: stringGetter({ key: STRING_KEYS.DEPOSIT_METHOD }),
+          value: depositMethod,
         },
         {
           key: 'availableBalance',
@@ -328,67 +370,84 @@ export const DepositForm = ({
     />
   );
 
-  return (
-    <div tw="flex min-h-10 flex-col p-1.25">
-      <div tw="flex flex-col gap-0.5">
-        <AmountInput
-          tokenBalance={tokenBalance}
-          value={amount}
-          onChange={setAmount}
-          token={token}
-          onTokenClick={onTokenSelect}
-          error={error}
-        />
-        <TransferRouteOptions
-          routes={routes}
-          isLoading={isFetching}
-          disabled={!amount || parseUnits(amount, token.decimals) === BigInt(0)}
-          selectedSpeed={selectedSpeed}
-          onSelectSpeed={setSelectedSpeed}
+  const hasDepositSteps = depositSteps?.length != null && depositSteps.length > 0;
+
+  const depositContent = hasDepositSteps ? (
+    <>
+      <div tw="row gap-0.5 text-color-text-2">
+        <Output tw="font-extra-large-bold" type={OutputType.Number} value={debouncedAmount} />
+        <AssetIcon
+          tw="[--asset-icon-size:2rem]"
+          symbol={getTokenSymbol(token.denom)}
           chainId={token.chainId}
-          type="deposit"
         />
       </div>
-      <div tw="flex flex-col gap-0.75">
-        {!depositSteps?.length && (
-          <div tw="mt-0.5 flex flex-col gap-0.5">
-            {currentStepError && (
-              <div tw="text-center text-small text-color-error">{currentStepError}</div>
-            )}
-            {receipt}
-            <Button
-              tw="w-full"
-              onClick={onDepositClick}
-              state={{
-                isDisabled: depositDisabled,
-                isLoading:
-                  isFetching || (!depositDisabled && !steps?.length) || awaitingWalletAction,
-              }}
-              action={ButtonAction.Primary}
-              type={ButtonType.Submit}
-            >
-              {depositButtonInner}
-            </Button>
-          </div>
-        )}
-        {depositSteps?.length && (
-          <div tw="my-1">
-            <DepositSteps
-              steps={depositSteps}
-              currentStep={currentStep}
-              currentStepError={currentStepError}
-              onRetry={retryCurrentStep}
-            />
-          </div>
-        )}
-      </div>
-      {!depositSteps?.length && !awaitingWalletAction && (
-        <OtherDepositOptions
-          awaitingWalletAction={awaitingWalletAction}
-          depositSteps={depositSteps}
-          onClose={onClose}
-        />
+      <DepositSteps
+        tw="ml-[-0.5rem]"
+        steps={depositSteps}
+        currentStep={currentStep}
+        currentStepError={currentStepError}
+        onRetry={retryCurrentStep}
+      />
+    </>
+  ) : (
+    <AmountInput
+      tokenBalance={tokenBalance}
+      value={amount}
+      onChange={setAmount}
+      token={token}
+      onTokenClick={onTokenSelect}
+      error={error}
+    />
+  );
+
+  const noticeMessage = calc(() => {
+    if (isBelowInstantDepositMin) {
+      return stringGetter({
+        key: STRING_KEYS.FREE_INSTANT_DEPOSIT_MIN,
+        params: { MIN_AMOUNT: SKIP_GO_FAST_TRANSFER_MIN },
+      });
+    }
+    if (isAboveInstantDepositMax) {
+      return stringGetter({
+        key: STRING_KEYS.FREE_INSTANT_DEPOSIT_MAX,
+        params: { MAX_AMOUNT: SKIP_GO_FAST_TRANSFER_LIMIT },
+      });
+    }
+
+    return undefined;
+  });
+
+  const depositContentBottom = (
+    <div tw="mt-0.5 flex flex-col gap-0.5">
+      {currentStepError && (
+        <div tw="text-center text-small text-color-error">{currentStepError}</div>
       )}
+      {receipt}
+      <Button
+        tw="w-full"
+        onClick={onDepositClick}
+        state={{
+          isDisabled: depositDisabled,
+          isLoading: isFetching || (!depositDisabled && !steps?.length) || awaitingWalletAction,
+        }}
+        action={ButtonAction.Primary}
+        type={ButtonType.Submit}
+      >
+        {depositButtonInner}
+      </Button>
+      {noticeMessage && (
+        <AlertMessage withAccentText tw="rounded-[0.375rem]" type={AlertType.Notice}>
+          {noticeMessage}
+        </AlertMessage>
+      )}
+    </div>
+  );
+
+  return (
+    <div tw="flex h-full min-h-10 flex-col p-1.25">
+      <div tw="flex flex-col gap-0.5">{depositContent}</div>
+      <div tw="mt-auto flex flex-col gap-0.75">{depositContentBottom}</div>
     </div>
   );
 };

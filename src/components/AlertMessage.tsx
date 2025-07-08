@@ -1,3 +1,5 @@
+import { forwardRef } from 'react';
+
 import styled, { css } from 'styled-components';
 
 import { AlertType } from '@/constants/alerts';
@@ -7,6 +9,7 @@ import { layoutMixins } from '@/styles/layoutMixins';
 type StyleProps = {
   className?: string;
   type: AlertType;
+  withAccentText?: boolean;
 };
 
 type ElementProps = {
@@ -15,19 +18,18 @@ type ElementProps = {
 
 export type AlertMessageProps = ElementProps & StyleProps;
 
-export const AlertMessage: React.FC<AlertMessageProps> = ({
-  className,
-  children,
-  type,
-}: AlertMessageProps) => {
-  return (
-    <AlertContainer type={type} className={className}>
-      {children}
-    </AlertContainer>
-  );
-};
+export const AlertMessage = forwardRef<HTMLDivElement, AlertMessageProps>(
+  ({ className, children, type, withAccentText }, ref) => {
+    return (
+      <$AlertContainer ref={ref} type={type} className={className} withAccentText={withAccentText}>
+        <$AlertAccent />
+        {children}
+      </$AlertContainer>
+    );
+  }
+);
 
-const AlertContainer = styled.div<StyleProps>`
+const $AlertContainer = styled.div<StyleProps>`
   ${layoutMixins.column}
 
   --alert-accent-color: transparent;
@@ -80,15 +82,30 @@ const AlertContainer = styled.div<StyleProps>`
 
   font-size: 0.8125em;
 
-  padding: 0.625em 0.75em;
+  padding: 0.625em 0.75em 0.625em 1em;
 
-  color: var(--color-text-2);
+  ${({ withAccentText }) =>
+    withAccentText
+      ? css`
+          color: var(--alert-accent-color, var(--color-text-2));
+        `
+      : css`
+          color: var(--color-text-2);
+        `}
 
   background: var(--alert-background);
-  border-left: 0.25em solid var(--alert-accent-color);
   border-radius: 0.25em;
 
   white-space: pre-wrap;
 
   user-select: all;
+`;
+
+const $AlertAccent = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0.25em;
+  height: 100%;
+  background: var(--alert-accent-color);
 `;

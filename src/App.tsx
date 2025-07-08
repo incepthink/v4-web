@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useMemo } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef } from 'react';
 
 import isPropValid from '@emotion/is-prop-valid';
 import { PrivyProvider } from '@privy-io/react-auth';
@@ -19,7 +19,7 @@ import { DydxProvider } from '@/hooks/useDydxClient';
 import { LocaleProvider } from '@/hooks/useLocaleSeparators';
 import { NotificationsProvider } from '@/hooks/useNotifications';
 import { RestrictionProvider } from '@/hooks/useRestrictions';
-import { StatsigProvider } from '@/hooks/useStatsig';
+import { StatsigProvider, useStatsigGateValue } from '@/hooks/useStatsig';
 import { SubaccountProvider } from '@/hooks/useSubaccount';
 
 import '@/styles/constants.css';
@@ -39,9 +39,13 @@ import { NotificationsToastArea } from '@/layout/NotificationsToastArea';
 import { parseLocationHash } from '@/lib/urlUtils';
 import { config, privyConfig } from '@/lib/wagmi';
 
+import { BonsaiCore } from './bonsai/ontology';
 import AggtraderNavbar from './components/AggtraderNavbar';
+import { ComplianceBanner } from './components/ComplianceBanner';
 import { RestrictionWarning } from './components/RestrictionWarning';
+import { DialogTypes } from './constants/dialogs';
 import { LocalStorageKey } from './constants/localStorage';
+import { StatsigFlags } from './constants/statsig';
 import { SkipProvider } from './hooks/transfers/skipClient';
 import { useAnalytics } from './hooks/useAnalytics';
 import { useBreakpoints } from './hooks/useBreakpoints';
@@ -56,10 +60,12 @@ import { useUpdateTransfers } from './hooks/useUpdateTransfers';
 import { isTruthy } from './lib/isTruthy';
 import { AffiliatesPage } from './pages/affiliates/AffiliatesPage';
 import { persistor } from './state/_store';
+import { setOnboardedThisSession } from './state/account';
 import { appQueryClient } from './state/appQueryClient';
 import { useAppDispatch, useAppSelector } from './state/appTypes';
 import { AppTheme, setAppThemeSetting } from './state/appUiConfigs';
 import { getAppThemeSetting } from './state/appUiConfigsSelectors';
+import { openDialog } from './state/dialogs';
 import breakpoints from './styles/breakpoints';
 
 const MarketsPage = lazy(() => import('@/pages/markets/Markets'));
@@ -84,6 +90,7 @@ const Content = () => {
   useUpdateTransfers();
   useReferralCode();
   useUiRefreshMigrations();
+  useOpenDepositIfRelevant();
 
   const { isTablet, isNotTablet } = useBreakpoints();
   const { chainTokenLabel } = useTokenConfigs();
@@ -93,7 +100,7 @@ const Content = () => {
   const isShowingFooter = useShouldShowFooter();
   const isSimpleUi = isTablet;
 
-  const { showRestrictionWarning } = useComplianceState();
+  const { showComplianceBanner } = useComplianceState();
 
   const pathFromHash = useMemo(() => {
     if (location.hash === '') {
@@ -108,7 +115,9 @@ const Content = () => {
     return (
       <>
         <GlobalStyle />
-        <$SimpleUiGrid>
+        <$SimpleUiGrid showRestrictionBanner={showComplianceBanner}>
+          <ComplianceBanner />
+
           <$SimpleUiMain>
             <AggtraderNavbar />
             <Suspense fallback={<LoadingSpace id="main" tw="h-full w-full" />}>
@@ -141,10 +150,10 @@ const Content = () => {
       <$Content
         isShowingHeader={isShowingHeader}
         isShowingFooter={isShowingFooter}
-        showRestrictionWarning={showRestrictionWarning}
+        showRestrictionWarning={showComplianceBanner}
       >
         {isShowingHeader && <HeaderDesktop />}
-        {showRestrictionWarning && <RestrictionWarning />}
+        <RestrictionWarning />
         <$Main>
           <Suspense fallback={<LoadingSpace id="main" />}>
             <Routes>
@@ -213,6 +222,22 @@ function useUiRefreshMigrations() {
       }
     }
   }, [themeSetting, seenUiRefresh, dispatch, setSeenUiRefresh]);
+}
+
+function useOpenDepositIfRelevant() {
+  const hasOnboarded = useAppSelector((state) => state.account.onboardedThisSession);
+  const equity = useAppSelector(BonsaiCore.account.parentSubaccountSummary.data)?.equity.toNumber();
+  const dispatch = useAppDispatch();
+  const shouldDeposit = useStatsigGateValue(StatsigFlags.abPopupDeposit);
+  const opened = useRef(false);
+
+  useEffect(() => {
+    if (shouldDeposit && hasOnboarded && !opened.current && equity != null && equity < 1) {
+      opened.current = true;
+      dispatch(setOnboardedThisSession(true));
+      dispatch(openDialog(DialogTypes.Deposit2({})));
+    }
+  }, [dispatch, equity, hasOnboarded, shouldDeposit]);
 }
 
 const wrapProvider = (Component: React.ComponentType<any>, props?: any) => {
@@ -353,10 +378,11 @@ const $Main = styled.main`
   position: relative;
 `;
 
-const $SimpleUiGrid = styled.div`
+const $SimpleUiGrid = styled.div<{ showRestrictionBanner?: boolean }>`
   display: grid;
   grid-template-areas: 'Main';
   grid-template-columns: 100vw;
+  grid-template-rows: 100vh;
 `;
 
 const $SimpleUiMain = styled.main`
